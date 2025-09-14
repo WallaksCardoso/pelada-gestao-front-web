@@ -1,0 +1,37 @@
+name: pelada_gestao_front
+description: "A new Flutter project."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Para requisições REST (fetch no JS)
+  http: ^1.2.2
+
+  # Para salvar token / preferências (equivalente ao localStorage)
+  flutter_secure_storage: ^9.2.2
+
+  # Para formatação de datas (igual ao toLocaleDateString)
+  intl: ^0.19.0
+
+  # Ícones iOS/Material extra
+  cupertino_icons: ^1.0.8
+
+  # Gerenciamento de estado (tema, login, etc.)
+  provider: ^6.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/

@@ -1,0 +1,5 @@
+-> Abrir em chrome
+flutter run -d chrome
+
+-> Limpar build
+rd -r -fo build
