@@ -47,13 +47,12 @@ flutter run -d chrome
 
 Os endereços dos backends ficam em `lib/config/config.dart`.
 
-Para gerar a versão web publicada no GitHub Pages (pasta `docs/`):
+A publicação é automática: a cada push na `main`, a CI gera o build web e publica no GitHub Pages.
+Para gerar o mesmo build localmente:
 
 ```bash
 flutter build web --release --base-href /pelada-gestao-front-web/
 ```
-
-e copie o conteúdo de `build/web` para `docs/`.
 
 ## Testes
 
@@ -62,7 +61,7 @@ flutter test
 ```
 
 Conferem que o app abre na tela de login e que o tema escolhido fica salvo. A CI roda a análise
-estática, os testes e o build web a cada push.
+estática, os testes e o build web a cada push e, na `main`, publica o site.
 
 ## Estrutura
 
@@ -76,7 +75,6 @@ lib/
     cadastro/        usuário, lista e jogadores
     sorteios/        listas em andamento e fechadas
   home/              tela inicial
-docs/                build web publicado no GitHub Pages
 ```
 
 ## Projetos relacionados
