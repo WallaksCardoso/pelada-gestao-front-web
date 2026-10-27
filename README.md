@@ -1,16 +1,90 @@
-# pelada_gestao_front
+# Panelinha em Flutter (pelada-gestao-front-web)
 
-A new Flutter project.
+Versão em Flutter do Panelinha: monta a lista da pelada, cadastra os jogadores e sorteia os times.
+Publicada para a web e preparada para Android, iOS e desktop.
 
-## Getting Started
+[![CI](https://github.com/WallaksCardoso/pelada-gestao-front-web/actions/workflows/ci.yml/badge.svg)](https://github.com/WallaksCardoso/pelada-gestao-front-web/actions/workflows/ci.yml)
+![Flutter](https://img.shields.io/badge/Flutter-3-informational)
+![Dart](https://img.shields.io/badge/Dart-3.9-informational)
+[![Licença](https://img.shields.io/badge/licen%C3%A7a-MIT-informational)](LICENSE)
 
-This project is a starting point for a Flutter application.
+**Demonstração:** <https://wallakscardoso.github.io/pelada-gestao-front-web/>
 
-A few resources to get you started if this is your first Flutter project:
+## Sobre
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Reescreve em Flutter o [front em JavaScript](https://github.com/WallaksCardoso/pelada-gestao-front),
+com as mesmas telas e os mesmos backends: o login e o cadastro de usuários usam o
+[spring-jwt-auth](https://github.com/WallaksCardoso/spring-jwt-auth), e listas, jogadores e sorteios
+usam o [pelada-gestao](https://github.com/WallaksCardoso/pelada-gestao). O token JWT fica guardado no
+armazenamento seguro do dispositivo.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Funcionalidades
+
+- Login e cadastro de usuário
+- Criação de listas (sorteios) e cadastro de jogadores, marcando goleiros
+- Sorteio dos times Azul e Vermelho, com reservas
+- Listas em andamento e listas fechadas
+- Tema claro e escuro, lembrado entre as aberturas
+- Avisos e indicador de carregamento
+
+## Stack
+
+- Flutter 3 e Dart 3.9
+- `http` para a API REST
+- `flutter_secure_storage` para o token e as preferências
+- `provider` para o tema
+- `intl` para datas
+- GitHub Pages e GitHub Actions
+
+## Como rodar
+
+Pré-requisito: Flutter 3 (canal estável).
+
+```bash
+flutter pub get
+flutter run -d chrome
+```
+
+Os endereços dos backends ficam em `lib/config/config.dart`.
+
+Para gerar a versão web publicada no GitHub Pages (pasta `docs/`):
+
+```bash
+flutter build web --release --base-href /pelada-gestao-front-web/
+```
+
+e copie o conteúdo de `build/web` para `docs/`.
+
+## Testes
+
+```bash
+flutter test
+```
+
+Conferem que o app abre na tela de login e que o tema escolhido fica salvo. A CI roda a análise
+estática, os testes e o build web a cada push.
+
+## Estrutura
+
+```
+lib/
+  main.dart          rotas e tema
+  config/            endereços dos backends
+  core/              tema e utilidades (avisos, carregamento, cabeçalhos com token)
+  features/
+    auth/            login
+    cadastro/        usuário, lista e jogadores
+    sorteios/        listas em andamento e fechadas
+  home/              tela inicial
+docs/                build web publicado no GitHub Pages
+```
+
+## Projetos relacionados
+
+- [pelada-gestao-front](https://github.com/WallaksCardoso/pelada-gestao-front): versão em JavaScript
+- [pelada-gestao](https://github.com/WallaksCardoso/pelada-gestao): API de listas, jogadores e sorteio
+- [spring-jwt-auth](https://github.com/WallaksCardoso/spring-jwt-auth): login e cadastro de usuários
+
+## Licença
+
+[MIT](LICENSE)
