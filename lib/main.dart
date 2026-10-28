@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
-import 'core/theme/theme_provider.dart'; // novo provider
+
+import 'core/theme/theme_provider.dart';
+import 'features/auth/cadastro_page.dart';
 import 'features/auth/login_page.dart';
-import 'home/home.dart';
-import 'features/cadastro/pages/cadastro_pessoa.dart';
-import 'features/cadastro/pages/cadastro_sorteio.dart';
-import 'features/sorteios/pages/sorteios_em_andamento.dart';
-import 'features/sorteios/pages/sorteios_anteriores.dart';
-import 'features/cadastro/pages/cadastro_jogador.dart';
+import 'features/listas/lista_page.dart';
+import 'features/listas/listas_page.dart';
+import 'features/listas/nova_lista_page.dart';
 
 void main() {
   runApp(
@@ -26,32 +26,24 @@ class PeladaGestaoApp extends StatelessWidget {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
     return MaterialApp(
-      title: 'Pelada Gestão',
+      title: "Panelinha",
       debugShowCheckedModeBanner: false,
-      theme: themeProvider.currentTheme, // tema dinâmico
-      initialRoute: "/login",
+      theme: themeProvider.currentTheme,
+      locale: const Locale("pt", "BR"),
+      supportedLocales: const [Locale("pt", "BR")],
+      localizationsDelegates: GlobalMaterialLocalizations.delegates,
       routes: {
-        "/login": (_) => const LoginPage(),
-        "/home": (_) => const HomePage(),
-        "/cadastroPessoa": (_) => const CadastroPessoaPage(),
-        "/cadastroSorteio": (_) => const CadastroSorteioPage(),
-        "/sorteiosEmAndamento": (_) => const SorteiosEmAndamentoPage(),
-        "/sorteiosAnteriores": (_) => const SorteiosAnterioresPage(),
+        "/": (_) => const LoginPage(),
+        "/cadastro": (_) => const CadastroPage(),
+        "/listas": (_) => const ListasPage(),
+        "/nova-lista": (_) => const NovaListaPage(),
       },
       onGenerateRoute: (settings) {
-        if (settings.name == "/cadastroJogador") {
-          final args = settings.arguments;
-          if (args is Map<String, dynamic>) {
-            return MaterialPageRoute(
-              builder: (_) => CadastroJogadorPage(
-                sorteioId: args["sorteioId"],
-                nomeSorteio: args["nomeSorteio"],
-                sorteioJaFeito: args["sorteioJaFeito"] ?? false,
-              ),
-            );
-          }
+        final lista = settings.arguments;
+        if (settings.name == "/lista" && lista is Map<String, dynamic>) {
+          return MaterialPageRoute(builder: (_) => ListaPage(lista: lista));
         }
-        return null;
+        return MaterialPageRoute(builder: (_) => const LoginPage());
       },
     );
   }

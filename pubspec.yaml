@@ -1,5 +1,5 @@
 name: pelada_gestao_front
-description: "A new Flutter project."
+description: "Interface do sistema da pelada: listas, jogadores e sorteio dos times."
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -17,13 +17,15 @@ dependencies:
   flutter_secure_storage: ^9.2.2
 
   # Para formatação de datas (igual ao toLocaleDateString)
-  intl: ^0.19.0
+  intl: ^0.20.2
 
   # Ícones iOS/Material extra
   cupertino_icons: ^1.0.8
 
   # Gerenciamento de estado (tema, login, etc.)
   provider: ^6.1.2
+  flutter_localizations:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:
@@ -33,5 +35,3 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-  assets:
-    - assets/

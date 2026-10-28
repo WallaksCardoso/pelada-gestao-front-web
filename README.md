@@ -8,6 +8,8 @@ Roda na web e está preparada para Android, iOS e desktop.
 ![Dart](https://img.shields.io/badge/Dart-3.9-informational)
 [![Licença](https://img.shields.io/badge/licen%C3%A7a-MIT-informational)](LICENSE)
 
+![Resultado do sorteio com os times Azul e Vermelho e os reservas](docs/img/resultado.png)
+
 ## Sobre
 
 Interface do sistema da pelada em microsserviços: o login e o cadastro de usuários usam o
@@ -17,12 +19,15 @@ armazenamento seguro do dispositivo.
 
 ## Funcionalidades
 
-- Login e cadastro de usuário
-- Criação de listas (sorteios) e cadastro de jogadores, marcando goleiros
-- Sorteio dos times Azul e Vermelho, com reservas
-- Listas em andamento e listas fechadas
-- Tema claro e escuro, lembrado entre as aberturas
-- Avisos e indicador de carregamento
+- Login e criação de conta
+- Listas abertas e sorteadas em abas, com quantos jogadores e goleiros cada uma tem
+- Criação de lista escolhendo quantos jogadores tem cada time
+- Cadastro rápido de jogadores, marcando quem joga no gol, com o placar da lista (jogadores, goleiros e
+  vagas nos times)
+- Sorteio dos times Azul e Vermelho, com reservas, e resultado salvo para consultar depois
+- Resultado copiado em um toque, pronto para colar no WhatsApp
+- Tema escuro (padrão) e claro, lembrado entre as aberturas
+- Sessão expirada leva de volta ao login
 
 ## Stack
 
@@ -59,7 +64,8 @@ flutter build web --release --dart-define=API_AUTH=https://... --dart-define=API
 flutter test
 ```
 
-Conferem que o app abre na tela de login e que o tema escolhido fica salvo. A CI roda a análise
+Conferem a tela de login e a ida para a criação de conta, o aviso de campos vazios, o tema padrão
+e a escolha salva, e o texto do resultado copiado para o WhatsApp. A CI roda a análise
 estática, os testes e o build web a cada push, e monta a imagem Docker.
 
 ## Estrutura
@@ -68,12 +74,10 @@ estática, os testes e o build web a cada push, e monta a imagem Docker.
 lib/
   main.dart          rotas e tema
   config/            endereços dos backends
-  core/              tema e utilidades (avisos, carregamento, cabeçalhos com token)
+  core/              acesso à API, tema e componentes compartilhados
   features/
-    auth/            login
-    cadastro/        usuário, lista e jogadores
-    sorteios/        listas em andamento e fechadas
-  home/              tela inicial
+    auth/            login e criação de conta
+    listas/          listas, nova lista, jogadores, sorteio e resultado
 Dockerfile           build web servido pelo nginx
 ```
 

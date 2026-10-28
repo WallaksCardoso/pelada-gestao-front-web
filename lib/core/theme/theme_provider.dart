@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'theme.dart'; // onde estão seus AppTheme.lightTheme e AppTheme.darkTheme
+import 'theme.dart';
 
 class ThemeProvider extends ChangeNotifier {
   final _storage = const FlutterSecureStorage();
-  bool _isDarkMode = false;
+  bool _isDarkMode = true;
 
   bool get isDarkMode => _isDarkMode;
 
@@ -12,12 +12,11 @@ class ThemeProvider extends ChangeNotifier {
     _loadTheme();
   }
 
-  ThemeData get currentTheme =>
-      _isDarkMode ? AppTheme.darkTheme : AppTheme.lightTheme;
+  ThemeData get currentTheme => _isDarkMode ? AppTheme.escuro : AppTheme.claro;
 
   Future<void> _loadTheme() async {
     final saved = await _storage.read(key: "darkMode");
-    _isDarkMode = saved == "true";
+    _isDarkMode = saved != "false";
     notifyListeners();
   }
 
