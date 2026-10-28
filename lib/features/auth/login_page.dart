@@ -4,10 +4,9 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme/theme_provider.dart';
+import '../../config/config.dart';
 
-const String baseUrl = bool.fromEnvironment('dart.vm.product')
-    ? 'https://spring-jwt-auth-jdli.onrender.com/api/auth'
-    : 'http://localhost:8081/api/auth';
+const String baseUrl = AppConfig.apiAuth;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -93,7 +92,7 @@ class _LoginPageState extends State<LoginPage> {
                 border: Border.all(color: Colors.grey.shade500),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   )
@@ -177,12 +176,12 @@ class _LoginPageState extends State<LoginPage> {
                     alignment: Alignment.centerRight,
                     child: Switch(
                       value: themeProvider.isDarkMode,
-                      thumbColor: MaterialStateProperty.all(
+                      thumbColor: WidgetStateProperty.all(
                         themeProvider.isDarkMode
                             ? Colors.white
                             : Colors.black,
                       ),
-                      trackColor: MaterialStateProperty.all(
+                      trackColor: WidgetStateProperty.all(
                         themeProvider.isDarkMode
                             ? Colors.grey.shade700
                             : Colors.grey.shade400,

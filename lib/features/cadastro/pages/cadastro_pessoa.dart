@@ -1,10 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import '../../../config/config.dart';
 
-const String baseUrl = bool.fromEnvironment('dart.vm.product')
-    ? 'https://spring-jwt-auth-jdli.onrender.com/api/pessoas'
-    : 'http://localhost:8081/api/pessoas';
+const String baseUrl = AppConfig.apiPessoas;
 
 class CadastroPessoaPage extends StatefulWidget {
   const CadastroPessoaPage({super.key});

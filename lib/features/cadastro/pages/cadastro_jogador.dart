@@ -2,10 +2,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../../../config/config.dart';
 
-const String baseUrl = bool.fromEnvironment('dart.vm.product')
-    ? 'https://pelada-gestao.onrender.com/api'
-    : 'http://localhost:8080/api';
+const String baseUrl = AppConfig.apiSorteios;
 
 final Uri apiUrlJogadores = Uri.parse('$baseUrl/jogadores');
 final Uri apiUrlSorteio = Uri.parse('$baseUrl/sorteios');

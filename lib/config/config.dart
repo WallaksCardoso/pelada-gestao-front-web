@@ -1,5 +1,14 @@
 class AppConfig {
-  static const String apiAuth = "https://spring-jwt-auth-jdli.onrender.com/api/auth";
-  static const String apiPessoas = "https://spring-jwt-auth-jdli.onrender.com/api/pessoas";
-  static const String apiSorteios = "https://pelada-gestao.onrender.com/api";
+  static const String apiAuthBase = String.fromEnvironment(
+    'API_AUTH',
+    defaultValue: 'http://localhost:8081',
+  );
+  static const String apiPeladaBase = String.fromEnvironment(
+    'API_PELADA',
+    defaultValue: 'http://localhost:8080',
+  );
+
+  static const String apiAuth = '$apiAuthBase/api/auth';
+  static const String apiPessoas = '$apiAuthBase/api/pessoas';
+  static const String apiSorteios = '$apiPeladaBase/api';
 }
