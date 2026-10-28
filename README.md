@@ -1,58 +1,42 @@
-# Panelinha em Flutter (pelada-gestao-front-web)
-
-Versão em Flutter do Panelinha: monta a lista da pelada, cadastra os jogadores e sorteia os times.
-Roda na web e está preparada para Android, iOS e desktop.
+# pelada-gestao-front-web
 
 [![CI](https://github.com/WallaksCardoso/pelada-gestao-front-web/actions/workflows/ci.yml/badge.svg)](https://github.com/WallaksCardoso/pelada-gestao-front-web/actions/workflows/ci.yml)
-![Flutter](https://img.shields.io/badge/Flutter-3-informational)
-![Dart](https://img.shields.io/badge/Dart-3.9-informational)
-[![Licença](https://img.shields.io/badge/licen%C3%A7a-MIT-informational)](LICENSE)
 
-![Resultado do sorteio com os times Azul e Vermelho e os reservas](docs/img/resultado.png)
+Panelinha, a tela do sistema da pelada, em Flutter. Monta a lista da semana, cadastra quem vai jogar
+e sorteia os times. Fala com o [spring-jwt-auth](https://github.com/WallaksCardoso/spring-jwt-auth)
+para o login e com o [pelada-gestao](https://github.com/WallaksCardoso/pelada-gestao) para o resto.
 
-## Sobre
+![Resultado do sorteio](docs/img/resultado.png)
 
-Interface do sistema da pelada em microsserviços: o login e o cadastro de usuários usam o
-[spring-jwt-auth](https://github.com/WallaksCardoso/spring-jwt-auth), e listas, jogadores e sorteios
-usam o [pelada-gestao](https://github.com/WallaksCardoso/pelada-gestao). O token JWT fica guardado no
-armazenamento seguro do dispositivo.
+Escrevi uma primeira versão em JavaScript puro e reescrevi em Flutter para aprender o framework e
+ter a mesma tela na web e no celular.
 
-## Funcionalidades
+O resultado sai com os times lado a lado e um botão que copia o texto pronto para colar no grupo:
 
-- Login e criação de conta
-- Listas abertas e sorteadas em abas, com quantos jogadores e goleiros cada uma tem
-- Criação de lista escolhendo quantos jogadores tem cada time
-- Cadastro rápido de jogadores, marcando quem joga no gol, com o placar da lista (jogadores, goleiros e
-  vagas nos times)
-- Sorteio dos times Azul e Vermelho, com reservas, e resultado salvo para consultar depois
-- Resultado copiado em um toque, pronto para colar no WhatsApp
-- Tema escuro (padrão) e claro, lembrado entre as aberturas
-- Sessão expirada leva de volta ao login
+```
+Pelada de quinta - 30/10/2026
 
-## Stack
+Time Azul
+- Bruno (goleiro)
+- Ana
+...
+```
 
-- Flutter 3 e Dart 3.9
-- `http` para a API REST
-- `flutter_secure_storage` para o token e as preferências
-- `provider` para o tema
-- `intl` para datas
-- Docker (build web servido pelo nginx) e GitHub Actions
+## Rodando
 
-## Como rodar
+O jeito mais simples é o Docker Compose do
+[pelada-gestao](https://github.com/WallaksCardoso/pelada-gestao#subindo-tudo), que sobe os backends e
+esta tela em <http://localhost:3000>.
 
-O jeito mais simples é subir o sistema inteiro (backends, banco, Kafka e esta interface) com o
-Docker Compose do [pelada-gestao](https://github.com/WallaksCardoso/pelada-gestao#sistema-completo-com-docker-compose)
-e abrir <http://localhost:3000>.
-
-Para desenvolver a interface, com os backends já rodando, é preciso o Flutter 3 (canal estável):
+Para mexer na interface, com os backends rodando e o Flutter 3 instalado:
 
 ```bash
 flutter pub get
 flutter run -d chrome
 ```
 
-Os endereços dos backends ficam em `lib/config/config.dart`. O padrão é `http://localhost:8081`
-(autenticação) e `http://localhost:8080` (pelada); para outros endereços, informe no build:
+Por padrão ela procura a autenticação em `localhost:8081` e a API em `localhost:8080`. Para outros
+endereços:
 
 ```bash
 flutter build web --release --dart-define=API_AUTH=https://... --dart-define=API_PELADA=https://...
@@ -64,28 +48,10 @@ flutter build web --release --dart-define=API_AUTH=https://... --dart-define=API
 flutter test
 ```
 
-Conferem a tela de login e a ida para a criação de conta, o aviso de campos vazios, o tema padrão
-e a escolha salva, e o texto do resultado copiado para o WhatsApp. A CI roda a análise
-estática, os testes e o build web a cada push, e monta a imagem Docker.
-
-## Estrutura
-
-```
-lib/
-  main.dart          rotas e tema
-  config/            endereços dos backends
-  core/              acesso à API, tema e componentes compartilhados
-  features/
-    auth/            login e criação de conta
-    listas/          listas, nova lista, jogadores, sorteio e resultado
-Dockerfile           build web servido pelo nginx
-```
-
-## Projetos relacionados
-
-- [pelada-gestao](https://github.com/WallaksCardoso/pelada-gestao): API de listas, jogadores e sorteio
-- [spring-jwt-auth](https://github.com/WallaksCardoso/spring-jwt-auth): login e cadastro de usuários
+Cobrem o login, a ida para a criação de conta, o aviso de campos vazios, o tema (escuro por padrão e
+lembrado entre as aberturas) e o texto do resultado. A CI também roda `flutter analyze` e monta a
+imagem Docker.
 
 ## Licença
 
-[MIT](LICENSE)
+MIT
