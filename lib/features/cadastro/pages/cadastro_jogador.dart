@@ -31,12 +31,15 @@ class _CadastroJogadorPageState extends State<CadastroJogadorPage> {
 
   bool goleiroAtivo = false;
   bool carregando = false;
+  late bool sorteado = widget.sorteioJaFeito;
   List<dynamic> jogadores = [];
+  Map<String, dynamic>? resultado;
 
   @override
   void initState() {
     super.initState();
     carregarJogadores();
+    if (sorteado) carregarResultado();
   }
 
   Future<Map<String, String>> _getAuthHeaders() async {
@@ -59,7 +62,9 @@ class _CadastroJogadorPageState extends State<CadastroJogadorPage> {
 
       final data = jsonDecode(res.body);
       setState(() {
-        jogadores = data.where((j) => j['sorteioId'] == widget.sorteioId).toList();
+        jogadores = data
+            .where((j) => j['sorteioId'] == widget.sorteioId)
+            .toList();
       });
     } catch (e) {
       _showToast(e.toString(), true);
@@ -76,7 +81,7 @@ class _CadastroJogadorPageState extends State<CadastroJogadorPage> {
       "nome": nome,
       "goleiro": goleiroAtivo,
       "data": DateTime.now().toIso8601String().split("T")[0],
-      "sorteioId": widget.sorteioId
+      "sorteioId": widget.sorteioId,
     };
 
     setState(() => carregando = true);
@@ -104,6 +109,58 @@ class _CadastroJogadorPageState extends State<CadastroJogadorPage> {
     }
   }
 
+  Future<void> sortearTimes() async {
+    final confirmar = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text("Sortear times"),
+        content: const Text(
+          "Depois do sorteio, a lista não aceita mais jogadores. Continuar?",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text("Cancelar"),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text("Sortear"),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmar != true) return;
+    await _buscarTimes("sortear", "Times sorteados.");
+  }
+
+  Future<void> carregarResultado() => _buscarTimes("resultado");
+
+  Future<void> _buscarTimes(String rota, [String? sucesso]) async {
+    setState(() => carregando = true);
+    try {
+      final headers = await _getAuthHeaders();
+      final res = await http.get(
+        Uri.parse("$apiUrlSorteio/$rota/${widget.sorteioId}"),
+        headers: headers,
+      );
+
+      if (res.statusCode != 200) {
+        throw Exception(await _extrairMensagemErro(res));
+      }
+
+      setState(() {
+        resultado = jsonDecode(res.body);
+        sorteado = true;
+      });
+      if (sucesso != null) _showToast(sucesso);
+    } catch (e) {
+      _showToast(e.toString(), true);
+    } finally {
+      setState(() => carregando = false);
+    }
+  }
+
   Future<void> deletarJogador(int id) async {
     final confirmar = await showDialog<bool>(
       context: context,
@@ -111,8 +168,14 @@ class _CadastroJogadorPageState extends State<CadastroJogadorPage> {
         title: const Text("Confirmação"),
         content: const Text("Tem certeza que deseja excluir este jogador?"),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text("Cancelar")),
-          ElevatedButton(onPressed: () => Navigator.pop(ctx, true), child: const Text("Excluir")),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text("Cancelar"),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text("Excluir"),
+          ),
         ],
       ),
     );
@@ -151,7 +214,50 @@ class _CadastroJogadorPageState extends State<CadastroJogadorPage> {
 
   void _showToast(String msg, [bool erro = false]) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(msg), backgroundColor: erro ? Colors.red : Colors.green),
+      SnackBar(
+        content: Text(msg),
+        backgroundColor: erro ? Colors.red : Colors.green,
+      ),
+    );
+  }
+
+  Widget _time(String titulo, String chave, Color cor) {
+    final lista = (resultado?[chave] as List<dynamic>?) ?? [];
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              titulo,
+              style: TextStyle(
+                color: cor,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+            const SizedBox(height: 8),
+            if (lista.isEmpty) const Text("Ninguém"),
+            for (final jogador in lista)
+              Text(
+                jogador['nome'] +
+                    (jogador['goleiro'] == true ? " - Goleiro" : ""),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _resultado() {
+    return ListView(
+      padding: const EdgeInsets.all(12),
+      children: [
+        _time("Time Azul", "timeAzul", Colors.blue),
+        _time("Time Vermelho", "timeVermelho", Colors.red),
+        _time("Reservas", "reservas", Colors.grey),
+      ],
     );
   }
 
@@ -164,51 +270,69 @@ class _CadastroJogadorPageState extends State<CadastroJogadorPage> {
           Expanded(
             child: carregando
                 ? const Center(child: CircularProgressIndicator())
+                : resultado != null
+                ? _resultado()
                 : jogadores.isEmpty
-                    ? const Center(child: Text("Nenhum jogador cadastrado."))
-                    : ListView.builder(
-                        itemCount: jogadores.length,
-                        itemBuilder: (ctx, i) {
-                          final jogador = jogadores[i];
-                          return ListTile(
-                            title: Text(
-                              jogador['nome'] + (jogador['goleiro'] ? " - Goleiro" : ""),
-                              style: TextStyle(
-                                color: jogador['goleiro'] ? Colors.green : null,
-                                fontWeight: jogador['goleiro'] ? FontWeight.bold : null,
-                              ),
-                            ),
-                            trailing: IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.red),
-                              onPressed: widget.sorteioJaFeito
-                                  ? null
-                                  : () => deletarJogador(jogador['id']),
-                            ),
-                          );
-                        },
-                      ),
+                ? const Center(child: Text("Nenhum jogador cadastrado."))
+                : ListView.builder(
+                    itemCount: jogadores.length,
+                    itemBuilder: (ctx, i) {
+                      final jogador = jogadores[i];
+                      return ListTile(
+                        title: Text(
+                          jogador['nome'] +
+                              (jogador['goleiro'] ? " - Goleiro" : ""),
+                          style: TextStyle(
+                            color: jogador['goleiro'] ? Colors.green : null,
+                            fontWeight: jogador['goleiro']
+                                ? FontWeight.bold
+                                : null,
+                          ),
+                        ),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete, color: Colors.red),
+                          onPressed: sorteado
+                              ? null
+                              : () => deletarJogador(jogador['id']),
+                        ),
+                      );
+                    },
+                  ),
           ),
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: nomeController,
-                  decoration: const InputDecoration(labelText: "Nome do jogador"),
+          if (!sorteado)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: ElevatedButton(
+                onPressed: jogadores.isEmpty || carregando
+                    ? null
+                    : sortearTimes,
+                child: const Text("Sortear times"),
+              ),
+            ),
+          if (!sorteado)
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: nomeController,
+                    decoration: const InputDecoration(
+                      labelText: "Nome do jogador",
+                    ),
+                  ),
                 ),
-              ),
-              IconButton(
-                icon: Icon(
-                  goleiroAtivo ? Icons.sports_soccer : Icons.sports,
-                  color: goleiroAtivo ? Colors.green : null,
+                IconButton(
+                  icon: Icon(
+                    goleiroAtivo ? Icons.sports_soccer : Icons.sports,
+                    color: goleiroAtivo ? Colors.green : null,
+                  ),
+                  onPressed: () => setState(() => goleiroAtivo = !goleiroAtivo),
                 ),
-                onPressed: () => setState(() => goleiroAtivo = !goleiroAtivo),
-              ),
-              ElevatedButton(
-                onPressed: widget.sorteioJaFeito ? null : adicionarJogador,
-                child: const Text("Adicionar"),
-              ),
-            ],
-          ),
+                ElevatedButton(
+                  onPressed: sorteado ? null : adicionarJogador,
+                  child: const Text("Adicionar"),
+                ),
+              ],
+            ),
         ],
       ),
     );
